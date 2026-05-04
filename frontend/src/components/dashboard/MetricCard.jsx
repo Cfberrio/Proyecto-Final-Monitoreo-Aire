@@ -38,7 +38,11 @@ export default function MetricCard({ label, value, prevValue, unit, icon, color,
   return (
     <motion.button
       type="button"
-      whileHover={{ y: -2, scale: 1.01 }}
+      whileHover={
+        typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+          ? undefined
+          : { y: -2, scale: 1.01 }
+      }
       transition={{ type: 'spring', stiffness: 300, damping: 22 }}
       onClick={onClick}
       aria-label={`${label}: ${value} ${unit}`}

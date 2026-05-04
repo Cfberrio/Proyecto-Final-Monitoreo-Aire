@@ -11,6 +11,12 @@ export default function AnimatedNumber({ value, decimals = 1, durationMs = 320 }
     fromRef.current = display
     startRef.current = value
     tsRef.current = performance.now()
+    const prefersReduce = typeof window !== 'undefined'
+      && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    if (prefersReduce) {
+      setDisplay(value)
+      return
+    }
     let raf = 0
     const step = (now) => {
       const t = Math.min(1, (now - tsRef.current) / durationMs)
