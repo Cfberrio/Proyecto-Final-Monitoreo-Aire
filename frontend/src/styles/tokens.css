@@ -1,0 +1,23 @@
+:root {
+  --bg-base: radial-gradient(ellipse at top, #0f172a 0%, #0b1120 60%, #07090f 100%);
+  --color-text: #f1f5f9;
+  --color-muted: #94a3b8;
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.10);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.40);
+
+  --aqi-good: #00E400;
+  --aqi-moderate: #FFFF00;
+  --aqi-sensitive: #FF7E00;
+  --aqi-unhealthy: #FF0000;
+  --aqi-very-unhealthy: #8F3F97;
+  --aqi-hazardous: #7E0023;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
