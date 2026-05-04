@@ -1,10 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import Layout from './components/layout/Layout'
 import Dashboard from './pages/Dashboard'
-
-function PlaceholderPredictions() {
-  return <div className="text-slate-100">Predictions placeholder</div>
-}
+import Predictions from './pages/Predictions'
 
 export default function App() {
   return (
@@ -12,7 +9,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/predictions" element={<PlaceholderPredictions />} />
+        <Route path="/predictions" element={<Predictions />} />
       </Routes>
     </Layout>
   )
