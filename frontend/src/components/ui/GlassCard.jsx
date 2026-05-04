@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 
-export default function GlassCard({ as: Tag = 'div', className, accentColor, children, ...rest }) {
+export default function GlassCard({ as: Tag = 'div', className, children, ...rest }) {
   return (
     <Tag
       className={clsx(
@@ -8,7 +8,6 @@ export default function GlassCard({ as: Tag = 'div', className, accentColor, chi
         'border-white/10',
         className
       )}
-      style={accentColor ? { borderLeft: `3px solid ${accentColor}` } : undefined}
       {...rest}
     >
       {children}

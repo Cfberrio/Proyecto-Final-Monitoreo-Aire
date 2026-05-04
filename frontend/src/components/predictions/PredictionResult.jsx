@@ -1,4 +1,4 @@
-import { Bot, Sliders, AlertTriangle } from 'lucide-react'
+import { Bot, Sliders, ShieldAlert } from 'lucide-react'
 import GlassCard from '../ui/GlassCard'
 import Badge from '../ui/Badge'
 import AnimatedNumber from '../ui/AnimatedNumber'
@@ -9,52 +9,62 @@ export default function PredictionResult({ prediction, category, aqi_color, time
   if (prediction == null) return null
   const recs = HEALTH_RECOMMENDATIONS[category] ?? []
   const Icon = isAutomatic ? Bot : Sliders
-  const sourceLabel = isAutomatic ? 'datos del sensor' : 'datos manuales'
+  const sourceLabel = isAutomatic ? 'lectura del sensor' : 'datos manuales'
+
   return (
     <GlassCard className="relative p-6 overflow-hidden">
       <div
         aria-hidden="true"
-        className="absolute -inset-12 opacity-25 blur-3xl pointer-events-none"
+        className="absolute -inset-12 opacity-20 blur-3xl pointer-events-none"
         style={{ background: `radial-gradient(circle at 30% 20%, ${aqi_color}, transparent 70%)` }}
       />
-      <div className="relative">
-        <div className="flex items-center gap-2 text-slate-300">
-          <Icon className="h-5 w-5 text-blue-400" />
-          <span className="text-sm">Predicción XGBoost</span>
-        </div>
-        <div className="mt-4 flex items-center gap-5">
-          <div
-            className="flex h-24 w-24 items-center justify-center rounded-2xl text-4xl font-bold text-white"
-            style={{ background: `${aqi_color}55`, border: `2px solid ${aqi_color}` }}
-          >
-            <AnimatedNumber value={prediction} decimals={0} />
-          </div>
-          <div>
-            <Badge label={category} color={aqi_color} />
-            <p className="mt-2 text-xs text-slate-400">Basado en {sourceLabel} · {formatDateTime(timestamp)}</p>
-          </div>
+      <div className="relative space-y-5">
+        <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-slate-400 font-medium">
+          <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+          <span>Predicción XGBoost</span>
         </div>
 
+        <div className="flex items-baseline gap-3 flex-wrap">
+          <span className="text-6xl font-bold text-white tabular-nums leading-none">
+            <AnimatedNumber value={prediction} decimals={0} />
+          </span>
+          <span className="text-sm text-slate-500 uppercase tracking-wider">AQI</span>
+          <Badge label={category} color={aqi_color} />
+        </div>
+        <p className="text-xs text-slate-500">
+          A partir de {sourceLabel}, {formatDateTime(timestamp)}
+        </p>
+
         {recs.length > 0 && (
-          <div className="mt-5 rounded-xl border border-white/10 bg-white/5 p-4">
-            <div className="flex items-center gap-2 text-slate-200 font-medium text-sm mb-2">
-              <AlertTriangle className="h-4 w-4 text-yellow-400" />
-              Recomendaciones de salud
+          <div className="border-t border-white/5 pt-4 space-y-2">
+            <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-slate-400 font-medium">
+              <ShieldAlert className="h-3.5 w-3.5" style={{ color: aqi_color }} aria-hidden="true" />
+              Qué hacer
             </div>
-            <ul className="space-y-1.5 text-sm text-slate-300 list-disc list-inside">
-              {recs.map(r => <li key={r}>{r}</li>)}
+            <ul className="space-y-1.5 text-sm text-slate-200 leading-snug">
+              {recs.map(r => (
+                <li key={r} className="flex gap-2">
+                  <span className="text-slate-600 select-none" aria-hidden="true">·</span>
+                  <span>{r}</span>
+                </li>
+              ))}
             </ul>
           </div>
         )}
 
         {input_features && (
-          <div className="mt-4 border-t border-white/5 pt-4">
-            <div className="text-xs uppercase tracking-wider text-slate-500 mb-2">Variables usadas</div>
-            <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-300">
-              {Object.entries(input_features).map(([k, v]) => (
-                <span key={k}><span className="text-slate-500">{formatFeatureName(k)}:</span> {formatSensorValue(v, '', 1)}</span>
-              ))}
+          <div className="border-t border-white/5 pt-4">
+            <div className="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-medium mb-2">
+              Variables consideradas
             </div>
+            <dl className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1.5 text-xs">
+              {Object.entries(input_features).map(([k, v]) => (
+                <div key={k} className="flex justify-between gap-2">
+                  <dt className="text-slate-500">{formatFeatureName(k)}</dt>
+                  <dd className="text-slate-200 tabular-nums">{formatSensorValue(v, '', 1)}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
         )}
       </div>

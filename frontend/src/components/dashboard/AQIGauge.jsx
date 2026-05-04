@@ -28,7 +28,7 @@ function arcPath(fromAqi, toAqi, radius = 80, cx = 100, cy = 110) {
   return `M ${x1} ${y1} A ${radius} ${radius} 0 0 1 ${x2} ${y2}`
 }
 
-export default function AQIGauge({ aqi, category, color }) {
+export default function AQIGauge({ aqi, category, color, children }) {
   const angle = needleAngleForAQI(aqi)
   const critical = aqi != null && aqi > 150
   return (
@@ -36,18 +36,22 @@ export default function AQIGauge({ aqi, category, color }) {
       {color && (
         <div
           aria-hidden="true"
-          className="absolute -inset-12 opacity-30 blur-3xl pointer-events-none"
+          className="absolute -inset-12 opacity-30 blur-3xl pointer-events-none motion-safe:animate-[pulse_4s_ease-in-out_infinite]"
           style={{ background: `radial-gradient(circle at 50% 60%, ${color}, transparent 70%)` }}
         />
       )}
       {critical && (
-        <div aria-hidden="true" className="absolute inset-0 pointer-events-none animate-pulse" style={{ boxShadow: `inset 0 0 80px ${color}66` }} />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 pointer-events-none"
+          style={{ boxShadow: `inset 0 0 80px ${color}66` }}
+        />
       )}
       <div className="relative">
-        <h2 className="text-sm uppercase tracking-widest text-slate-400 mb-2">Índice AQI</h2>
+        <h2 className="text-[11px] uppercase tracking-[0.18em] text-slate-400 mb-2 font-medium">Índice AQI</h2>
         <svg viewBox="0 0 200 130" role="img" aria-label={`AQI ${aqi ?? 'desconocido'}, categoría ${category ?? 'sin datos'}`} className="w-full">
           {ARCS.map(a => (
-            <path key={a.from} d={arcPath(a.from, a.to)} stroke={a.color} strokeWidth="14" strokeLinecap="butt" fill="none" opacity="0.8" />
+            <path key={a.from} d={arcPath(a.from, a.to)} stroke={a.color} strokeWidth="14" strokeLinecap="butt" fill="none" opacity="0.85" />
           ))}
           <motion.line
             x1="100" y1="110"
@@ -61,10 +65,13 @@ export default function AQIGauge({ aqi, category, color }) {
           />
           <circle cx="100" cy="110" r="6" fill="#f1f5f9" />
         </svg>
-        <div className="text-center mt-2">
-          <div className="text-5xl font-bold text-white"><AnimatedNumber value={aqi} decimals={0} /></div>
-          {category && <div className="mt-2"><Badge label={category} color={color} /></div>}
+        <div className="text-center mt-1">
+          <div className="text-6xl font-bold text-white tabular-nums leading-none">
+            <AnimatedNumber value={aqi} decimals={0} />
+          </div>
+          {category && <div className="mt-3"><Badge label={category} color={color} /></div>}
         </div>
+        {children}
       </div>
     </GlassCard>
   )

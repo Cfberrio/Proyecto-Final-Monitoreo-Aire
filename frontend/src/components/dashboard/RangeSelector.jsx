@@ -17,7 +17,7 @@ export default function RangeSelector({ value, onChange }) {
           onClick={() => onChange(r.key)}
           className={clsx(
             'px-3 py-1.5 text-sm rounded-md transition-colors',
-            value === r.key ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-white/5'
+            value === r.key ? 'bg-white/10 text-white shadow-inner' : 'text-slate-300 hover:bg-white/5'
           )}
         >
           {r.label}

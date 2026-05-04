@@ -29,6 +29,6 @@ export default function AnimatedNumber({ value, decimals = 1, durationMs = 320 }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, durationMs])
 
-  if (value == null) return <span className="tabular-nums">—</span>
+  if (value == null) return <span className="tabular-nums text-slate-500">N/D</span>
   return <span className="tabular-nums">{Number(display).toFixed(decimals)}</span>
 }

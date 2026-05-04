@@ -1,8 +1,8 @@
-import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Cell, Tooltip } from 'recharts'
-import GlassCard from '../ui/GlassCard'
+import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts'
+import SolidCard from '../ui/SolidCard'
 import { formatFeatureName } from '../../utils/formatters'
 
-const SHADES = ['#1e3a8a', '#1d4ed8', '#2563eb', '#3b82f6', '#60a5fa', '#93c5fd']
+const BAR_COLOR = '#475569'
 
 export default function ModelInfoPanel({ modelInfo }) {
   if (!modelInfo) return null
@@ -11,35 +11,65 @@ export default function ModelInfoPanel({ modelInfo }) {
     .sort((a, b) => b.importance - a.importance)
 
   return (
-    <GlassCard className="p-6">
-      <h2 className="text-lg font-semibold text-white">Información del modelo</h2>
-      <dl className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-        <div><dt className="text-slate-500">Tipo</dt><dd className="text-slate-200">{modelInfo.model_type}</dd></div>
-        <div><dt className="text-slate-500">Entrenado</dt><dd className="text-slate-200">{modelInfo.training_date}</dd></div>
-        <div className="sm:col-span-2"><dt className="text-slate-500">Features</dt><dd className="text-slate-200">{modelInfo.features.map(formatFeatureName).join(' · ')}</dd></div>
+    <SolidCard className="p-6 space-y-6">
+      <div>
+        <h2 className="text-base font-semibold text-white">Sobre el modelo</h2>
+        <p className="text-xs text-slate-500 mt-1">
+          Cómo aprende a estimar el AQI a partir de las lecturas del sensor.
+        </p>
+      </div>
+
+      <dl className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-3 text-sm">
+        <div>
+          <dt className="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-medium">Tipo</dt>
+          <dd className="text-slate-200 mt-0.5">{modelInfo.model_type}</dd>
+        </div>
+        <div>
+          <dt className="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-medium">Entrenado</dt>
+          <dd className="text-slate-200 mt-0.5 tabular-nums">{modelInfo.training_date}</dd>
+        </div>
+        <div className="col-span-2 sm:col-span-1">
+          <dt className="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-medium">Variables</dt>
+          <dd className="text-slate-200 mt-0.5">{modelInfo.features.length}</dd>
+        </div>
       </dl>
 
-      <div className="mt-6">
-        <div className="text-xs uppercase tracking-wider text-slate-500 mb-2">Importancia de variables</div>
-        <div className="h-56">
+      <div>
+        <div className="flex items-baseline justify-between mb-3">
+          <h3 className="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-medium">
+            Peso de cada variable
+          </h3>
+          <span className="text-[11px] text-slate-600">% de influencia</span>
+        </div>
+        <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={importances} layout="vertical" margin={{ left: 10, right: 16 }}>
-              <XAxis type="number" stroke="#64748b" fontSize={11} domain={[0, 'dataMax']} />
-              <YAxis dataKey="feature" type="category" stroke="#cbd5e1" fontSize={12} width={100} />
-              <Tooltip
-                cursor={{ fill: 'rgba(255,255,255,0.04)' }}
-                contentStyle={{ background: '#0f172a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 }}
-                formatter={(v) => [(Number(v) * 100).toFixed(1) + '%', 'Importancia']}
+            <BarChart data={importances} layout="vertical" margin={{ left: 8, right: 24, top: 4, bottom: 4 }}>
+              <XAxis
+                type="number"
+                stroke="#475569"
+                fontSize={11}
+                tickFormatter={(v) => `${(v * 100).toFixed(0)}%`}
+                domain={[0, 'dataMax']}
               />
-              <Bar dataKey="importance" radius={[0, 6, 6, 0]}>
-                {importances.map((_, i) => (
-                  <Cell key={i} fill={SHADES[i % SHADES.length]} />
-                ))}
-              </Bar>
+              <YAxis
+                dataKey="feature"
+                type="category"
+                stroke="#cbd5e1"
+                fontSize={12}
+                width={100}
+                tickLine={false}
+                axisLine={false}
+              />
+              <Tooltip
+                cursor={{ fill: 'rgba(255,255,255,0.03)' }}
+                contentStyle={{ background: '#0f172a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 12 }}
+                formatter={(v) => [(Number(v) * 100).toFixed(1) + '%', 'Influencia']}
+              />
+              <Bar dataKey="importance" radius={[0, 4, 4, 0]} fill={BAR_COLOR} />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
-    </GlassCard>
+    </SolidCard>
   )
 }
