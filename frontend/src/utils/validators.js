@@ -1,0 +1,27 @@
+export const FIELD_RULES = {
+  pm25:        { label: 'PM 2.5',      unit: 'µg/m³', min: 0,   max: 500 },
+  pm10:        { label: 'PM 10',       unit: 'µg/m³', min: 0,   max: 600 },
+  pm1:         { label: 'PM 1.0',      unit: 'µg/m³', min: 0,   max: 400 },
+  temperature: { label: 'Temperatura', unit: '°C',    min: -10, max: 50  },
+  humidity:    { label: 'Humedad',     unit: '%',     min: 0,   max: 100 },
+}
+
+export function validateManualPrediction(values) {
+  const errors = {}
+  for (const [key, rule] of Object.entries(FIELD_RULES)) {
+    const raw = values[key]
+    if (raw === '' || raw == null) {
+      errors[key] = `${rule.label} es requerido.`
+      continue
+    }
+    const num = Number(raw)
+    if (Number.isNaN(num)) {
+      errors[key] = `${rule.label} debe ser un número.`
+      continue
+    }
+    if (num < rule.min || num > rule.max) {
+      errors[key] = `${rule.label} debe estar entre ${rule.min} y ${rule.max}.`
+    }
+  }
+  return errors
+}
