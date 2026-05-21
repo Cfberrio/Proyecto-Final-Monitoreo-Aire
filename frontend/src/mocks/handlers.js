@@ -12,19 +12,39 @@ const FAIL_RATE = Number(import.meta.env?.VITE_MSW_FAIL_RATE ?? 0)
 
 function maybeFail() {
   if (FAIL_RATE > 0 && Math.random() < FAIL_RATE) {
-    return HttpResponse.json({ message: 'Simulated upstream failure' }, { status: 500 })
+    return HttpResponse.json(
+      { error: 'INTERNAL_SERVER_ERROR', message: 'Simulated upstream failure', detail: null },
+      { status: 500 }
+    )
   }
   return null
 }
 
 export const handlers = [
-  http.get('*/api/v1/status', () => HttpResponse.json({ status: 'ok', version: '0.1.0' })),
+  http.get('*/api/v1/status', () =>
+    HttpResponse.json({
+      status: 'ok',
+      environment: 'development',
+      services: {
+        smart_citizen_api: { reachable: true, device_id: '19595', last_check: new Date().toISOString() },
+        model: { loaded: true, model_type: 'XGBoostRegressor', features_count: MODEL_INFO.features.length },
+      },
+      uptime_seconds: 163,
+    })
+  ),
 
   http.get('*/api/v1/sensor/current', () => maybeFail() ?? HttpResponse.json(currentReading())),
 
   http.get('*/api/v1/sensor/sensors', () =>
     HttpResponse.json(
-      Object.entries(SENSOR_CONFIG).map(([id, cfg]) => ({ sensor_id: Number(id), ...cfg }))
+      Object.entries(SENSOR_CONFIG).map(([id, cfg]) => ({
+        sensor_id: Number(id),
+        name: cfg.label,
+        unit: cfg.unit,
+        value: null,
+        prev_value: null,
+        recorded_at: null,
+      }))
     )
   ),
 
@@ -36,12 +56,12 @@ export const handlers = [
     return HttpResponse.json(historical(Number(params.sensorId), from, to, rollup))
   }),
 
-  http.get('*/api/v1/predictions/current', () => maybeFail() ?? HttpResponse.json(predictionFromCurrent())),
+  http.post('*/api/v1/predictions/current', () => maybeFail() ?? HttpResponse.json(predictionFromCurrent())),
 
-  http.post('*/api/v1/predictions/predict', async ({ request }) => {
+  http.post('*/api/v1/predictions/manual', async ({ request }) => {
     const body = await request.json()
     return maybeFail() ?? HttpResponse.json(predictionFromBody(body))
   }),
 
-  http.get('*/api/v1/predictions/model-info', () => HttpResponse.json(MODEL_INFO)),
+  http.get('*/api/v1/predictions/info', () => HttpResponse.json(MODEL_INFO)),
 ]

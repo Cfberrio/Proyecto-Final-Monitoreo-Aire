@@ -1,9 +1,9 @@
 import clsx from 'clsx'
 
 const COLORS = {
-  online:  { core: 'bg-green-400',  ping: 'bg-green-400',  label: 'En línea' },
-  stale:   { core: 'bg-yellow-400', ping: 'bg-yellow-400', label: 'Última lectura > 5 min' },
-  offline: { core: 'bg-red-500',    ping: null,            label: 'Sin señal' },
+  online:  { core: 'bg-green-400',  ping: 'bg-green-400',  label: 'Sensor en línea' },
+  stale:   { core: 'bg-yellow-400', ping: 'bg-yellow-400', label: 'Sensor con retraso' },
+  offline: { core: 'bg-amber-500',  ping: null,            label: 'Sensor sin publicar' },
 }
 
 export default function StatusDot({ status = 'offline', showLabel = true, label }) {

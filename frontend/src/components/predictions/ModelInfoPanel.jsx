@@ -1,14 +1,16 @@
 import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts'
 import SolidCard from '../ui/SolidCard'
-import { formatFeatureName } from '../../utils/formatters'
+import { formatFeatureName, formatDateTime } from '../../utils/formatters'
 
 const BAR_COLOR = '#475569'
+const TOP_N = 10
 
 export default function ModelInfoPanel({ modelInfo }) {
   if (!modelInfo) return null
   const importances = Object.entries(modelInfo.feature_importances ?? {})
     .map(([feature, importance]) => ({ feature: formatFeatureName(feature), importance }))
     .sort((a, b) => b.importance - a.importance)
+    .slice(0, TOP_N)
 
   return (
     <SolidCard className="p-6 space-y-6">
@@ -26,7 +28,7 @@ export default function ModelInfoPanel({ modelInfo }) {
         </div>
         <div>
           <dt className="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-medium">Entrenado</dt>
-          <dd className="text-slate-200 mt-0.5 tabular-nums">{modelInfo.training_date}</dd>
+          <dd className="text-slate-200 mt-0.5 tabular-nums">{formatDateTime(modelInfo.training_date)}</dd>
         </div>
         <div className="col-span-2 sm:col-span-1">
           <dt className="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-medium">Variables</dt>
@@ -37,11 +39,11 @@ export default function ModelInfoPanel({ modelInfo }) {
       <div>
         <div className="flex items-baseline justify-between mb-3">
           <h3 className="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-medium">
-            Peso de cada variable
+            Variables más influyentes
           </h3>
-          <span className="text-[11px] text-slate-600">% de influencia</span>
+          <span className="text-[11px] text-slate-600">top {importances.length} · % de influencia</span>
         </div>
-        <div className="h-64">
+        <div className="h-80">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={importances} layout="vertical" margin={{ left: 8, right: 24, top: 4, bottom: 4 }}>
               <XAxis
@@ -55,8 +57,8 @@ export default function ModelInfoPanel({ modelInfo }) {
                 dataKey="feature"
                 type="category"
                 stroke="#cbd5e1"
-                fontSize={12}
-                width={100}
+                fontSize={11}
+                width={150}
                 tickLine={false}
                 axisLine={false}
               />

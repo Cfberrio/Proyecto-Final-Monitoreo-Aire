@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { CloudOff } from 'lucide-react'
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts'
 import { format, parseISO, subHours } from 'date-fns'
 import { es } from 'date-fns/locale'
@@ -38,16 +39,27 @@ export default function SensorChart({ sensorId, sensorName, unit, color, timeRan
 
   if (isError) return <ErrorBanner message={`No pudimos cargar el histórico de ${sensorName}.`} onRetry={refetch} />
 
+  const readings = Array.isArray(data) ? data : (data?.readings ?? [])
   const gradientId = `chart-fill-${sensorId}`
+  const hasData = readings.length > 0
 
   return (
     <SolidCard className="p-5">
       <div className="h-72">
         {isLoading ? (
           <div className="h-full flex items-center justify-center"><LoadingSpinner size="lg" /></div>
+        ) : !hasData ? (
+          <div className="h-full flex flex-col items-center justify-center gap-2 text-center px-6">
+            <CloudOff className="h-6 w-6 text-slate-500" aria-hidden="true" />
+            <p className="text-sm text-slate-300 font-medium">Sin lecturas en este rango.</p>
+            <p className="text-xs text-slate-500 max-w-sm">
+              El sensor SCK no registró datos para {sensorName} en el periodo seleccionado.
+              Pruebe un rango más amplio o consulte el histórico cuando el dispositivo publique de nuevo.
+            </p>
+          </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={data ?? []} margin={{ top: 8, right: 12, bottom: 0, left: 0 }}>
+            <AreaChart data={readings} margin={{ top: 8, right: 12, bottom: 0, left: 0 }}>
               <defs>
                 <linearGradient id={gradientId} x1="0" x2="0" y1="0" y2="1">
                   <stop offset="0%" stopColor={color} stopOpacity={0.35} />

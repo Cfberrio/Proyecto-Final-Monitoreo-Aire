@@ -5,7 +5,7 @@ import Dashboard from './Dashboard'
 describe('Dashboard page', () => {
   it('loads sensor data and renders metric cards + AQI gauge', async () => {
     renderWithProviders(<Dashboard />)
-    await waitFor(() => expect(screen.getByText('Barranquilla Norte')).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByText(/SCK 2\.1/i)).toBeInTheDocument())
     expect(screen.getAllByText('PM 2.5').length).toBeGreaterThan(0)
     expect(screen.getByLabelText(/AQI/i)).toBeInTheDocument()
   })

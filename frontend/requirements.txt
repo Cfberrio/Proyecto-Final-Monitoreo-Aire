@@ -1,0 +1,80 @@
+# =============================================================================
+# AirWatch BQ Frontend — declared dependencies
+# =============================================================================
+# Este archivo es DOCUMENTACIÓN del entorno. El proyecto es JavaScript (Vite +
+# React), así que el archivo "real" que instala dependencias es package.json y
+# el comando equivalente a `pip install -r requirements.txt` es:
+#
+#     npm ci
+#
+# `npm ci` instala TODO lo de package-lock.json en versiones exactas,
+# reproducible bit a bit en cualquier máquina. Es lo que también ejecuta
+# el Dockerfile, así que el contenedor y la instalación local quedan iguales.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# 1. Requisitos del sistema (instalar antes de cualquier otra cosa)
+# -----------------------------------------------------------------------------
+# Necesita UNA de estas dos rutas (no las dos):
+#
+#   RUTA DOCKER (recomendada para "que solo funcione")
+#     - Docker Engine 20+ o Docker Desktop
+#       https://www.docker.com/products/docker-desktop
+#
+#   RUTA NODE NATIVO (recomendada para desarrollo con hot reload)
+#     - Node.js >= 20.0.0     https://nodejs.org/  (recomendado: 20 LTS)
+#     - npm   >= 10.0.0       (viene con Node)
+#
+# Comprobar versiones:
+#     node --version
+#     npm  --version
+#     docker --version
+#
+# -----------------------------------------------------------------------------
+# 2. Comandos de instalación + arranque
+# -----------------------------------------------------------------------------
+#   Docker (un solo comando):
+#       docker compose up --build
+#
+#   Node nativo:
+#       npm ci          # instala deps exactas según package-lock.json
+#       npm run dev     # dev server con HMR en http://localhost:5173
+#
+# -----------------------------------------------------------------------------
+# 3. Dependencias de runtime (lo que va al bundle del navegador)
+# -----------------------------------------------------------------------------
+@fontsource-variable/inter==5.2.8     # tipografía Inter variable
+@tanstack/react-query==5.100.9        # server state, caché, polling
+axios==1.16.0                         # cliente HTTP
+clsx==2.1.1                           # combinador de clases CSS condicional
+date-fns==4.1.0                       # formato de fechas + locale español
+framer-motion==12.38.0                # animaciones declarativas
+lucide-react==1.14.0                  # íconos SVG
+react==19.2.5                         # UI framework
+react-dom==19.2.5                     # renderer del DOM
+react-router-dom==6.30.3              # navegación SPA
+recharts==3.8.1                       # gráficas de serie de tiempo
+
+# -----------------------------------------------------------------------------
+# 4. Dependencias de desarrollo (no van al bundle)
+# -----------------------------------------------------------------------------
+@eslint/js==10.0.1                    # config base eslint
+@testing-library/jest-dom==6.9.1      # matchers DOM para tests
+@testing-library/react==16.3.2        # renderizar componentes en tests
+@testing-library/user-event==14.6.1   # simular interacción de usuario
+@types/react==19.2.14                 # tipos TS
+@types/react-dom==19.2.3              # tipos TS
+@vitejs/plugin-react==6.0.1           # plugin Vite para React
+@vitest/ui==4.1.5                     # UI interactiva para vitest
+autoprefixer==10.5.0                  # añade prefijos CSS
+eslint==10.2.1                        # linter
+eslint-plugin-react-hooks==7.1.1      # reglas de hooks
+eslint-plugin-react-refresh==0.5.2    # reglas para Fast Refresh
+globals==17.5.0                       # globals para eslint
+jsdom==29.1.1                         # DOM virtual para tests
+msw==2.14.2                           # mock service worker
+postcss==8.5.13                       # procesador CSS
+tailwindcss==3.4.19                   # framework CSS utilitario
+vite==8.0.10                          # bundler + dev server
+vitest==4.1.5                         # runner de tests
+whatwg-fetch==3.6.20                  # polyfill fetch en tests

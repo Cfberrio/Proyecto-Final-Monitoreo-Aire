@@ -4,12 +4,24 @@ import Badge from '../ui/Badge'
 import AnimatedNumber from '../ui/AnimatedNumber'
 import { HEALTH_RECOMMENDATIONS } from '../../constants/healthRecommendations'
 import { formatDateTime, formatFeatureName, formatSensorValue } from '../../utils/formatters'
+import { calculateAQIFromPM25 } from '../../utils/aqi'
 
-export default function PredictionResult({ prediction, category, aqi_color, timestamp, input_features, isAutomatic }) {
+export default function PredictionResult({
+  prediction,
+  category,
+  aqi_color,
+  timestamp,
+  input_features,
+  model_version,
+  data_source,
+  isAutomatic,
+}) {
   if (prediction == null) return null
   const recs = HEALTH_RECOMMENDATIONS[category] ?? []
-  const Icon = isAutomatic ? Bot : Sliders
-  const sourceLabel = isAutomatic ? 'lectura del sensor' : 'datos manuales'
+  const auto = isAutomatic ?? data_source === 'smart_citizen_live'
+  const Icon = auto ? Bot : Sliders
+  const sourceLabel = auto ? 'lectura del sensor' : 'datos manuales'
+  const aqi = calculateAQIFromPM25(prediction)
 
   return (
     <GlassCard className="relative p-6 overflow-hidden">
@@ -24,15 +36,31 @@ export default function PredictionResult({ prediction, category, aqi_color, time
           <span>Predicción XGBoost</span>
         </div>
 
-        <div className="flex items-baseline gap-3 flex-wrap">
-          <span className="text-6xl font-bold text-white tabular-nums leading-none">
-            <AnimatedNumber value={prediction} decimals={0} />
-          </span>
-          <span className="text-sm text-slate-500 uppercase tracking-wider">AQI</span>
-          <Badge label={category} color={aqi_color} />
+        <div className="flex items-end gap-4 flex-wrap">
+          <div className="flex items-baseline gap-2">
+            <span className="text-6xl font-bold text-white tabular-nums leading-none">
+              <AnimatedNumber value={prediction} decimals={1} />
+            </span>
+            <span className="text-sm text-slate-400 lowercase">µg/m³</span>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] uppercase tracking-[0.18em] text-slate-500">PM 2.5 estimado</span>
+            <Badge label={category} color={aqi_color} />
+          </div>
+          {aqi != null && (
+            <div className="ml-auto text-right">
+              <div className="text-2xl font-semibold text-slate-100 tabular-nums leading-none">{aqi}</div>
+              <div className="text-[10px] uppercase tracking-[0.18em] text-slate-500 mt-1">AQI equivalente</div>
+            </div>
+          )}
         </div>
         <p className="text-xs text-slate-500">
           A partir de {sourceLabel}, {formatDateTime(timestamp)}
+          {model_version && (
+            <span className="ml-2 text-slate-600">
+              · modelo {formatDateTime(model_version)}
+            </span>
+          )}
         </p>
 
         {recs.length > 0 && (

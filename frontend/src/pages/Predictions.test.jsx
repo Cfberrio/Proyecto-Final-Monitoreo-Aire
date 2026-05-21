@@ -10,13 +10,18 @@ describe('Predictions page', () => {
     await waitFor(() => expect(screen.getAllByText(/Predicción XGBoost/i).length).toBeGreaterThan(0))
   })
 
-  it('shows ErrorBanner when /predictions/current fails', async () => {
+  it('shows sensor-offline status when /predictions/current returns 502', async () => {
     server.use(
-      http.get('*/api/v1/predictions/current', () =>
-        HttpResponse.json({ message: 'boom' }, { status: 500 })
+      http.post('*/api/v1/predictions/current', () =>
+        HttpResponse.json(
+          { error: 'HTTP_502', message: 'sensor stale', detail: null },
+          { status: 502 }
+        )
       )
     )
     renderWithProviders(<Predictions />)
-    await waitFor(() => expect(screen.getByRole('alert')).toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.getByText(/sensor físico no está publicando/i)).toBeInTheDocument()
+    )
   })
 })

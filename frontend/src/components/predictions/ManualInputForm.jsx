@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import LoadingSpinner from '../ui/LoadingSpinner'
-import { FIELD_RULES, validateManualPrediction } from '../../utils/validators'
+import { FIELD_RULES, validateManualPrediction, buildManualPayload } from '../../utils/validators'
 
 const ORDER = ['pm25', 'pm10', 'pm1', 'temperature', 'humidity']
 const GROUPS = [
@@ -21,7 +21,7 @@ export default function ManualInputForm({ onSubmit, isLoading }) {
       setTouched(Object.fromEntries(ORDER.map(k => [k, true])))
       return
     }
-    onSubmit(Object.fromEntries(ORDER.map(k => [k, Number(values[k])])))
+    onSubmit(buildManualPayload(values))
   }
 
   const fillTypical = () => {
@@ -45,6 +45,7 @@ export default function ManualInputForm({ onSubmit, isLoading }) {
                 <div key={key} className="flex flex-col">
                   <label htmlFor={id} className="text-sm text-slate-300 mb-1">
                     {rule.label} <span className="text-slate-500 text-xs">({rule.unit})</span>
+                    {!rule.required && <span className="ml-1 text-slate-600 text-[10px] uppercase tracking-wider">opt</span>}
                   </label>
                   <input
                     id={id}

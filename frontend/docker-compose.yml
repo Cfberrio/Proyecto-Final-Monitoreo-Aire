@@ -1,0 +1,27 @@
+name: airwatch-bq
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: airwatch-bq-frontend:latest
+    container_name: airwatch-bq-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    environment:
+      # Where the backend lives, seen from inside the container.
+      #   - Backend running on host machine:   http://host.docker.internal:8000
+      #   - Backend running in another container: http://backend:8000
+      #   - Backend on Render:                 https://airwatch-bq-backend.onrender.com
+      BACKEND_URL: ${BACKEND_URL:-http://host.docker.internal:8000}
+    extra_hosts:
+      # Lets the Linux container resolve `host.docker.internal` to the host machine.
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

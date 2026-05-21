@@ -1,11 +1,11 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Bot, Sliders } from 'lucide-react'
 import clsx from 'clsx'
 import { useCurrentPrediction, useManualPrediction, useModelInfo } from '../hooks/usePrediction'
 import PredictionResult from '../components/predictions/PredictionResult'
 import ManualInputForm from '../components/predictions/ManualInputForm'
 import ModelInfoPanel from '../components/predictions/ModelInfoPanel'
-import LoadingSpinner from '../components/ui/LoadingSpinner'
+import AutoPredictionStatus from '../components/predictions/AutoPredictionStatus'
 import ErrorBanner from '../components/ui/ErrorBanner'
 import SolidCard from '../components/ui/SolidCard'
 
@@ -14,11 +14,26 @@ const TABS = [
   { key: 'manual', label: 'Manual',     Icon: Sliders },
 ]
 
+function manualErrorMessage(err) {
+  const status = err?.response?.status
+  const apiMsg = err?.response?.data?.message
+  if (status === 422) return apiMsg ?? 'Valores inválidos. Revise los campos.'
+  if (status === 503) return 'Modelo no disponible. Intente de nuevo en unos segundos.'
+  return apiMsg ?? 'No pudimos calcular la predicción con esos valores.'
+}
+
 export default function Predictions() {
   const [activeTab, setActiveTab] = useState('auto')
   const current = useCurrentPrediction()
   const manual  = useManualPrediction()
   const modelInfo = useModelInfo()
+  const manualPanelRef = useRef(null)
+
+  const focusManual = () => {
+    setActiveTab('manual')
+    manualPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    manualPanelRef.current?.querySelector('input')?.focus({ preventScroll: true })
+  }
 
   return (
     <div className="space-y-8">
@@ -49,26 +64,23 @@ export default function Predictions() {
       <section className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
         <div className={clsx('space-y-3', activeTab !== 'auto' && 'hidden md:block')}>
           <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-slate-500 font-medium">
-            <Bot className="h-3.5 w-3.5" aria-hidden="true" /> Automático
+            <Bot className="h-3.5 w-3.5" aria-hidden="true" /> Automático · lectura del sensor
           </div>
-          {current.isLoading && (
-            <div className="flex justify-center py-12"><LoadingSpinner size="lg" /></div>
-          )}
-          {current.isError && (
-            <ErrorBanner message="No pudimos obtener la predicción automática." onRetry={current.refetch} />
-          )}
-          {current.data && <PredictionResult {...current.data} isAutomatic />}
+          <AutoPredictionStatus query={current} onUseManual={focusManual} />
         </div>
 
-        <div className={clsx('space-y-3', activeTab !== 'manual' && 'hidden md:block')}>
+        <div ref={manualPanelRef} className={clsx('space-y-3', activeTab !== 'manual' && 'hidden md:block')}>
           <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-slate-500 font-medium">
-            <Sliders className="h-3.5 w-3.5" aria-hidden="true" /> Manual
+            <Sliders className="h-3.5 w-3.5" aria-hidden="true" /> Manual · valores de prueba
           </div>
           <SolidCard className="p-5">
             <ManualInputForm onSubmit={manual.mutate} isLoading={manual.isPending} />
           </SolidCard>
           {manual.isError && (
-            <ErrorBanner message="No pudimos calcular la predicción con esos valores." onRetry={() => manual.reset()} />
+            <ErrorBanner
+              message={manualErrorMessage(manual.error)}
+              onRetry={() => manual.reset()}
+            />
           )}
           {manual.data && <PredictionResult {...manual.data} isAutomatic={false} />}
         </div>

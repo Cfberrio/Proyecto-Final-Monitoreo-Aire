@@ -16,13 +16,27 @@ const FEATURE_NAMES = {
   pm10: 'PM 10',
   pm1:  'PM 1.0',
   temperature: 'Temperatura',
+  temperatura: 'Temperatura',
   humidity: 'Humedad',
+  humedad: 'Humedad',
   co2: 'CO₂',
   no2: 'NO₂',
   noise: 'Ruido',
   battery: 'Batería',
+  velocidad_viento: 'Viento',
+  hora_sin: 'Hora (sin)',
+  hora_cos: 'Hora (cos)',
+  dia_semana_sin: 'Día semana (sin)',
+  dia_semana_cos: 'Día semana (cos)',
 }
 
 export function formatFeatureName(key) {
-  return FEATURE_NAMES[key] ?? key
+  if (FEATURE_NAMES[key]) return FEATURE_NAMES[key]
+  return key
+    .replace(/_juanmina/g, '')
+    .replace(/pm25/g, 'PM 2.5')
+    .replace(/pm10/g, 'PM 10')
+    .replace(/_lag_/g, ' lag ')
+    .replace(/_roll(\d+)_mean/g, ' media $1h')
+    .replace(/_/g, ' ')
 }

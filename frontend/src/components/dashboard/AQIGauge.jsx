@@ -28,7 +28,7 @@ function arcPath(fromAqi, toAqi, radius = 80, cx = 100, cy = 110) {
   return `M ${x1} ${y1} A ${radius} ${radius} 0 0 1 ${x2} ${y2}`
 }
 
-export default function AQIGauge({ aqi, category, color, children }) {
+export default function AQIGauge({ aqi, category, color, isStale, children }) {
   const angle = needleAngleForAQI(aqi)
   const critical = aqi != null && aqi > 150
   return (
@@ -48,7 +48,14 @@ export default function AQIGauge({ aqi, category, color, children }) {
         />
       )}
       <div className="relative">
-        <h2 className="text-[11px] uppercase tracking-[0.18em] text-slate-400 mb-2 font-medium">Índice AQI</h2>
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="text-[11px] uppercase tracking-[0.18em] text-slate-400 font-medium">Índice AQI</h2>
+          {isStale && (
+            <span className="text-[10px] uppercase tracking-wider text-amber-300/80 bg-amber-500/10 border border-amber-500/20 rounded-full px-2 py-0.5">
+              Última lectura
+            </span>
+          )}
+        </div>
         <svg viewBox="0 0 200 130" role="img" aria-label={`AQI ${aqi ?? 'desconocido'}, categoría ${category ?? 'sin datos'}`} className="w-full">
           {ARCS.map(a => (
             <path key={a.from} d={arcPath(a.from, a.to)} stroke={a.color} strokeWidth="14" strokeLinecap="butt" fill="none" opacity="0.85" />
