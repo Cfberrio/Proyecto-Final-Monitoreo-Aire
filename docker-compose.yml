@@ -1,0 +1,49 @@
+# =============================================================================
+# AirWatch BQ — Frontend
+# =============================================================================
+# One-shot launcher:
+#
+#     docker compose up --build           # builds and serves on :5173
+#     docker compose up -d                # detached
+#     docker compose down                 # stop and remove the container
+#     docker compose logs -f frontend     # tail logs
+#
+# Override the backend URL without editing this file:
+#
+#     BACKEND_URL=https://airwatch-bq-backend.onrender.com docker compose up
+#
+# Or put BACKEND_URL=... in a local `.env` next to this file — compose auto-loads it.
+# =============================================================================
+
+name: airwatch-bq
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: airwatch-bq-frontend:latest
+    container_name: airwatch-bq-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-5173}:80"
+    environment:
+      # Where the backend lives, as seen from inside the container:
+      #   • Backend on host machine:        http://host.docker.internal:8000
+      #   • Backend in another container:   http://backend:8000
+      #   • Backend on Render (public):     https://airwatch-bq-backend.onrender.com
+      BACKEND_URL: "${BACKEND_URL:-http://host.docker.internal:8000}"
+    extra_hosts:
+      # Lets the Linux container resolve `host.docker.internal` to the host machine.
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

@@ -1,0 +1,52 @@
+# =============================================================================
+# .dockerignore — files NOT copied into the build context
+# =============================================================================
+# Keeps the image small and the cache stable across rebuilds.
+
+# --- Dependencies + build output -------------------------------------------
+node_modules
+dist
+dist-ssr
+coverage
+.cache
+.vitest-cache
+
+# --- Version control --------------------------------------------------------
+.git
+.gitignore
+.gitattributes
+
+# --- Environment files (never bake into image) ------------------------------
+.env
+.env.*
+!.env.example
+
+# --- Editors ----------------------------------------------------------------
+.vscode
+.idea
+*.swp
+*.swo
+
+# --- OS junk ----------------------------------------------------------------
+.DS_Store
+Thumbs.db
+
+# --- Logs -------------------------------------------------------------------
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# --- Docs + agents (not needed at build time) ------------------------------
+README.md
+docs
+.claude
+
+# --- Docker files (the Dockerfile itself is read by the daemon, not COPYed) -
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# --- Misc -------------------------------------------------------------------
+.playwright-mcp
+*.tsbuildinfo
